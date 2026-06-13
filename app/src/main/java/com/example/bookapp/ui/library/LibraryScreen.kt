@@ -15,7 +15,6 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 
 @Composable
 fun LibraryScreen(viewModel: LibraryViewModel = viewModel()) {
-    val state by viewModel.state.collectAsState()
 
     Box(
         modifier = Modifier
@@ -24,7 +23,7 @@ fun LibraryScreen(viewModel: LibraryViewModel = viewModel()) {
         contentAlignment = Alignment.Center
     ) {
         Text(
-            text = "Library Screen (${state.items.size} books)",
+            text = "library",
             style = MaterialTheme.typography.headlineLarge
         )
     }

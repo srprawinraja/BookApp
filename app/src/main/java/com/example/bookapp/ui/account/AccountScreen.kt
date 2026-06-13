@@ -15,7 +15,6 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 
 @Composable
 fun AccountScreen(viewModel: AccountViewModel = viewModel()) {
-    val state by viewModel.state.collectAsState()
 
     Box(
         modifier = Modifier
@@ -24,7 +23,7 @@ fun AccountScreen(viewModel: AccountViewModel = viewModel()) {
         contentAlignment = Alignment.Center
     ) {
         Text(
-            text = "Welcome, ${state.userName}",
+            text = "account",
             style = MaterialTheme.typography.headlineLarge
         )
     }
