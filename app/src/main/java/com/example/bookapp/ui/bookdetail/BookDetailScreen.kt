@@ -22,6 +22,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil3.compose.AsyncImage
 import com.example.bookapp.ui.model.Book
+import java.net.URLDecoder
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -34,10 +35,10 @@ fun BookDetailScreen(
 
     val decodedBook = remember(book) {
         book.copy(
-            title = java.net.URLDecoder.decode(book.title, "UTF-8"),
-            author = java.net.URLDecoder.decode(book.author, "UTF-8"),
-            coverUrl = java.net.URLDecoder.decode(book.coverUrl, "UTF-8"),
-            key = java.net.URLDecoder.decode(book.key, "UTF-8")
+            title = URLDecoder.decode(book.title, "UTF-8"),
+            author = URLDecoder.decode(book.author, "UTF-8"),
+            coverUrl = URLDecoder.decode(book.coverUrl, "UTF-8"),
+            key = URLDecoder.decode(book.key, "UTF-8")
         )
     }
 

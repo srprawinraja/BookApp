@@ -26,9 +26,10 @@ class BookDetailViewModel : ViewModel() {
             _state.update { it.copy(isLoading = true) }
             try {
                 val response = RetroFitInstance.api.getWorkDetails(bookKey)
+                val summaryText = response.getDescriptionText()
                 _state.update { 
                     it.copy(
-                        summary = response.getDescriptionText(),
+                        summary = summaryText,
                         isLoading = false 
                     ) 
                 }

@@ -93,7 +93,13 @@ fun MainScreen() {
                     }
                 ) 
             }
-            composable(Screen.Library.route) { LibraryScreen() }
+            composable(Screen.Library.route) { 
+                LibraryScreen(
+                    onBookClick = { book ->
+                        navController.navigate(Screen.BookDetail.createRoute(book.key, book.title, book.author, book.coverUrl))
+                    }
+                ) 
+            }
             composable(Screen.Account.route) { AccountScreen() }
             composable(Screen.BookList.route) { 
                 BookListScreen(
