@@ -1,15 +1,20 @@
 package com.example.bookapp.ui.bookdetail
 
-import androidx.lifecycle.ViewModel
+import android.app.Application
+import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.bookapp.data.RetroFitInstance
+import com.example.bookapp.data.db.book.BookEntity
+import com.example.bookapp.data.db.book.BookRepository
+import com.example.bookapp.ui.model.Book
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
-class BookDetailViewModel : ViewModel() {
+class BookDetailViewModel(application: Application) : AndroidViewModel(application) {
+    private val repository = BookRepository.getInstance(application)
     private val _state = MutableStateFlow(BookDetailState())
     val state: StateFlow<BookDetailState> = _state.asStateFlow()
 
@@ -18,6 +23,47 @@ class BookDetailViewModel : ViewModel() {
             is BookDetailEvent.LoadSummary -> {
                 fetchSummary(event.bookKey)
             }
+            is BookDetailEvent.OnSaveToggle -> {
+                toggleSaveBook(event.book)
+            }
+            is BookDetailEvent.CheckIfSaved -> {
+                checkIfSaved(event.bookKey)
+            }
+        }
+    }
+
+    private fun checkIfSaved(bookKey: String) {
+        viewModelScope.launch {
+            val isSaved = repository.isBookSaved(bookKey)
+            _state.update { it.copy(isSaved = isSaved) }
+        }
+    }
+
+    private fun toggleSaveBook(book: Book) {
+        viewModelScope.launch {
+            val isSaved = repository.isBookSaved(book.key)
+            if (isSaved) {
+                repository.deleteBook(
+                    BookEntity(
+                        key = book.key,
+                        title = book.title,
+                        author = book.author,
+                        coverUrl = book.coverUrl,
+                        summary = _state.value.summary
+                    )
+                )
+            } else {
+                repository.saveBook(
+                    BookEntity(
+                        key = book.key,
+                        title = book.title,
+                        author = book.author,
+                        coverUrl = book.coverUrl,
+                        summary = _state.value.summary
+                    )
+                )
+            }
+            _state.update { it.copy(isSaved = !isSaved) }
         }
     }
 

@@ -7,43 +7,51 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.Bookmark
+import androidx.compose.material.icons.filled.BookmarkBorder
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil3.compose.AsyncImage
 import com.example.bookapp.ui.model.Book
-import java.net.URLDecoder
+import android.app.Application
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.viewmodel.compose.viewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun BookDetailScreen(
     book: Book,
-    viewModel: BookDetailViewModel = viewModel(),
     onBackClick: () -> Unit
 ) {
-    val state by viewModel.state.collectAsState()
-
-    val decodedBook = remember(book) {
+    val displayBook = remember(book) {
         book.copy(
-            title = URLDecoder.decode(book.title, "UTF-8"),
-            author = URLDecoder.decode(book.author, "UTF-8"),
-            coverUrl = URLDecoder.decode(book.coverUrl, "UTF-8"),
-            key = URLDecoder.decode(book.key, "UTF-8")
+            title = book.title.replace("+", " "),
+            author = book.author.replace("+", " ")
         )
     }
 
-    LaunchedEffect(decodedBook.key) {
-        viewModel.onEvent(BookDetailEvent.LoadSummary(decodedBook.key))
+    val context = LocalContext.current
+    val viewModel: BookDetailViewModel = viewModel(
+        factory = object : ViewModelProvider.Factory {
+            override fun <T : ViewModel> create(modelClass: Class<T>): T {
+                return BookDetailViewModel(context.applicationContext as Application) as T
+            }
+        }
+    )
+    val state by viewModel.state.collectAsState()
+
+    LaunchedEffect(displayBook.key) {
+        viewModel.onEvent(BookDetailEvent.LoadSummary(displayBook.key))
+        viewModel.onEvent(BookDetailEvent.CheckIfSaved(displayBook.key))
     }
 
     Scaffold(
@@ -53,6 +61,15 @@ fun BookDetailScreen(
                 navigationIcon = {
                     IconButton(onClick = onBackClick) {
                         Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
+                    }
+                },
+                actions = {
+                    IconButton(onClick = { viewModel.onEvent(BookDetailEvent.OnSaveToggle(displayBook)) }) {
+                        Icon(
+                            imageVector = if (state.isSaved) Icons.Default.Bookmark else Icons.Default.BookmarkBorder,
+                            contentDescription = if (state.isSaved) "Unsave" else "Save",
+                            tint = if (state.isSaved) Color.Yellow else Color.Black
+                        )
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.White)
@@ -76,8 +93,8 @@ fun BookDetailScreen(
                 elevation = CardDefaults.cardElevation(8.dp)
             ) {
                 AsyncImage(
-                    model = decodedBook.coverUrl,
-                    contentDescription = decodedBook.title,
+                    model = displayBook.coverUrl,
+                    contentDescription = displayBook.title,
                     modifier = Modifier.fillMaxSize(),
                     contentScale = ContentScale.Crop
                 )
@@ -86,7 +103,7 @@ fun BookDetailScreen(
             Spacer(modifier = Modifier.height(24.dp))
 
             Text(
-                text = decodedBook.title,
+                text = displayBook.title,
                 style = MaterialTheme.typography.headlineMedium,
                 fontWeight = FontWeight.Bold,
                 color = Color.Black
@@ -95,7 +112,7 @@ fun BookDetailScreen(
             Spacer(modifier = Modifier.height(8.dp))
 
             Text(
-                text = decodedBook.author,
+                text = displayBook.author,
                 style = MaterialTheme.typography.titleMedium,
                 color = Color.Gray
             )

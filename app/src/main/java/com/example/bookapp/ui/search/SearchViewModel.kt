@@ -39,8 +39,8 @@ class SearchViewModel : ViewModel() {
                 val books = response.docs.map { doc ->
                     Book(
                         key = doc.key,
-                        title = doc.title,
-                        author = doc.getAuthor(),
+                        title = doc.title.replace("+", " "),
+                        author = doc.getAuthor().replace("+", " "),
                         coverUrl = doc.getCoverUrl()
                     )
                 }

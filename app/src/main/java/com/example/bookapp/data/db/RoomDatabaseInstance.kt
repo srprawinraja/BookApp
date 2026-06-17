@@ -9,7 +9,7 @@ import com.example.bookapp.data.db.book.BookEntity
 
 @Database(entities = [BookEntity::class], version = 1, exportSchema = false)
 abstract class BookDatabase : RoomDatabase() {
-    abstract val bookDao: BookDao
+    abstract fun bookDao(): BookDao
 
     companion object {
         @Volatile
