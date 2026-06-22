@@ -2,8 +2,6 @@ package com.example.bookapp.ui.booklist
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.*
@@ -13,6 +11,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.paging.LoadState
+import androidx.paging.compose.collectAsLazyPagingItems
+import androidx.paging.compose.itemKey
 import com.example.bookapp.ui.component.VerticalBookItem
 import com.example.bookapp.ui.model.Book
 
@@ -23,21 +24,7 @@ fun BookListScreen(
     onBookClick: (Book) -> Unit,
     onBackClick: () -> Unit
 ) {
-    val state by viewModel.state.collectAsState()
-    val listState = rememberLazyListState()
-
-    val shouldLoadMore = remember {
-        derivedStateOf {
-            val lastVisibleItemIndex = listState.layoutInfo.visibleItemsInfo.lastOrNull()?.index ?: 0
-            lastVisibleItemIndex >= state.books.size - 1 && !state.isMoreLoading && state.books.isNotEmpty()
-        }
-    }
-
-    LaunchedEffect(shouldLoadMore.value) {
-        if (shouldLoadMore.value) {
-            viewModel.onEvent(BookListEvent.LoadMoreBooks)
-        }
-    }
+    val pagingItems = viewModel.books.collectAsLazyPagingItems()
 
     Scaffold(
         topBar = {
@@ -56,29 +43,79 @@ fun BookListScreen(
         containerColor = Color.White
     ) { padding ->
         LazyColumn(
-            state = listState,
             modifier = Modifier
                 .fillMaxSize()
                 .padding(padding),
             contentPadding = PaddingValues(16.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            items(state.books) { book ->
-                VerticalBookItem(book = book, onClick = onBookClick)
+            items(
+                count = pagingItems.itemCount,
+                key = pagingItems.itemKey { it.key }
+            ) { index ->
+                val book = pagingItems[index]
+                if (book != null) {
+                    VerticalBookItem(book = book, onClick = onBookClick)
+                }
             }
 
-            if (state.isMoreLoading) {
-                item {
-                    Box(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(16.dp),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        CircularProgressIndicator(color = Color.Yellow)
+            // Handle loading state for the footer
+            when (val appendState = pagingItems.loadState.append) {
+                is LoadState.Loading -> {
+                    item {
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(16.dp),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            CircularProgressIndicator(color = Color.Yellow)
+                        }
+                    }
+                }
+                is LoadState.Error -> {
+                    item {
+                        Column(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(16.dp),
+                            horizontalAlignment = Alignment.CenterHorizontally
+                        ) {
+                            Text(text = "Error loading more books", color = Color.Red)
+                            Button(
+                                onClick = { pagingItems.retry() },
+                                colors = ButtonDefaults.buttonColors(containerColor = Color.Yellow)
+                            ) {
+                                Text("Retry", color = Color.Black)
+                            }
+                        }
+                    }
+                }
+                else -> {}
+            }
+        }
+
+        // Handle initial load state
+        when (val refreshState = pagingItems.loadState.refresh) {
+            is LoadState.Loading -> {
+                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                    CircularProgressIndicator(color = Color.Yellow)
+                }
+            }
+            is LoadState.Error -> {
+                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                        Text(text = "Failed to load books", color = Color.Red)
+                        Button(
+                            onClick = { pagingItems.retry() },
+                            colors = ButtonDefaults.buttonColors(containerColor = Color.Yellow)
+                        ) {
+                            Text("Retry", color = Color.Black)
+                        }
                     }
                 }
             }
+            else -> {}
         }
     }
 }
