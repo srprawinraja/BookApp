@@ -1,16 +1,19 @@
 package com.example.bookapp.ui.booklist
 
+import android.util.Log
 import androidx.paging.PagingSource
 import androidx.paging.PagingState
 import com.example.bookapp.data.RetroFitInstance
 import com.example.bookapp.data.model.BookDoc
 
 class BookPagingSource : PagingSource<Int, BookDoc>() {
+    val TAG = "BookPagingSource"
 
     override suspend fun load(
         params: LoadParams<Int>
     ): LoadResult<Int, BookDoc> {
         return try {
+
             val page = params.key ?: 1
             val response = RetroFitInstance.api.searchBooks(limit = params.loadSize, page = page)
             val books = response.docs
