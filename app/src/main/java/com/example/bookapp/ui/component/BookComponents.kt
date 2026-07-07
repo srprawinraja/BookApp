@@ -42,7 +42,7 @@ fun CategoryRow(
                     modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
                     style = MaterialTheme.typography.bodyMedium,
                     fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal,
-                    color = if (isSelected) Color.Black else Color.DarkGray
+                    color = if (isSelected) Color.Black else Color.Black
                 )
             }
         }
@@ -94,7 +94,7 @@ fun BookItem(book: Book, modifier: Modifier = Modifier) {
         Text(
             text = book.author,
             style = MaterialTheme.typography.bodySmall,
-            color = Color.Gray,
+            color = Color.Black,
             maxLines = 1,
             overflow = TextOverflow.Ellipsis
         )
@@ -143,7 +143,7 @@ fun VerticalBookItem(book: Book, onClick: (Book) -> Unit) {
             Text(
                 text = book.author,
                 style = MaterialTheme.typography.bodyMedium,
-                color = Color.Gray
+                color = Color.Black
             )
         }
     }

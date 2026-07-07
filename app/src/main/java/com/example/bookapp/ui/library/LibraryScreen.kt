@@ -42,7 +42,11 @@ fun LibraryScreen(
         topBar = {
             TopAppBar(
                 title = { Text("My Library", fontWeight = FontWeight.Bold) },
-                colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.White)
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = Color.White,
+                    titleContentColor = Color.Black,
+                    navigationIconContentColor = Color.Black
+                )
             )
         },
         containerColor = Color.White
@@ -67,7 +71,7 @@ fun LibraryScreen(
                     Text(
                         text = "No saved books yet",
                         style = MaterialTheme.typography.bodyLarge,
-                        color = Color.Gray
+                        color = Color.Black
                     )
                 }
             } else {

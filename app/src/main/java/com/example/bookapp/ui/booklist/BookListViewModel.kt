@@ -1,17 +1,23 @@
 package com.example.bookapp.ui.booklist
 
-import androidx.lifecycle.ViewModel
+import android.app.Application
+import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.paging.ExperimentalPagingApi
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.PagingData
 import androidx.paging.cachedIn
 import androidx.paging.map
+import com.example.bookapp.data.db.BookDatabase
 import com.example.bookapp.ui.model.Book
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 
-class BookListViewModel : ViewModel() {
+@OptIn(ExperimentalPagingApi::class)
+class BookListViewModel(application: Application) : AndroidViewModel(application) {
+
+    private val database = BookDatabase.getDatabase(application)
 
     val books: Flow<PagingData<Book>> = Pager(
         config = PagingConfig(
@@ -19,15 +25,16 @@ class BookListViewModel : ViewModel() {
             prefetchDistance = 2,
             enablePlaceholders = false
         ),
-        pagingSourceFactory = { BookPagingSource() }
+        remoteMediator = BookRemoteMediator(database),
+        pagingSourceFactory = { database.pagingDao().getPagedBooks() }
     ).flow
         .map { pagingData ->
-            pagingData.map { doc ->
+            pagingData.map { entity ->
                 Book(
-                    key = doc.key,
-                    title = doc.title.replace("+", " "),
-                    author = doc.getAuthor().replace("+", " "),
-                    coverUrl = doc.getCoverUrl()
+                    key = entity.key,
+                    title = entity.title.replace("+", " "),
+                    author = entity.author.replace("+", " "),
+                    coverUrl = entity.coverUrl
                 )
             }
         }

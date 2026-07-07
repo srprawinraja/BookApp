@@ -72,7 +72,11 @@ fun BookDetailScreen(
                         )
                     }
                 },
-                colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.White)
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = Color.White,
+                    titleContentColor = Color.Black,
+                    navigationIconContentColor = Color.Black
+                )
             )
         },
         containerColor = Color.White
@@ -114,7 +118,7 @@ fun BookDetailScreen(
             Text(
                 text = displayBook.author,
                 style = MaterialTheme.typography.titleMedium,
-                color = Color.Gray
+                color = Color.Black
             )
 
             Spacer(modifier = Modifier.height(24.dp))
@@ -134,7 +138,7 @@ fun BookDetailScreen(
                 Text(
                     text = state.summary,
                     style = MaterialTheme.typography.bodyLarge,
-                    color = Color.DarkGray
+                    color = Color.Black
                 )
             }
         }

@@ -44,10 +44,11 @@ fun MainScreen() {
         bottomBar = {
             NavigationBar(
                 containerColor = Color.White,
-                contentColor = Color.Gray
+                contentColor = Color.Black
             ) {
                 items.forEach { item ->
-                    val isSelected = currentDestination?.hierarchy?.any { it.route == item.screen.route } == true
+                    val isSelected = currentDestination?.hierarchy?.any { it.route == item.screen.route } == true ||
+                            (item == NavigationItem.Home && currentDestination?.route == Screen.BookList.route)
                     
                     NavigationBarItem(
                         icon = {
@@ -62,11 +63,11 @@ fun MainScreen() {
                             navController.navigate(item.screen.route)
                         },
                         colors = NavigationBarItemDefaults.colors(
-                            selectedIconColor = Color.Yellow,
-                            selectedTextColor = Color.Yellow,
+                            selectedIconColor = Color(0xFF1A73E8),
+                            selectedTextColor = Color(0xFF1A73E8),
                             indicatorColor = Color.Transparent,
-                            unselectedIconColor = Color.Gray,
-                            unselectedTextColor = Color.Gray
+                            unselectedIconColor = Color.Black,
+                            unselectedTextColor = Color.Black
                         )
                     )
                 }

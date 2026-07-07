@@ -6,10 +6,14 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 import com.example.bookapp.data.db.book.BookDao
 import com.example.bookapp.data.db.book.BookEntity
+import com.example.bookapp.data.db.paging.CachedBookEntity
+import com.example.bookapp.data.db.paging.PagingDao
+import com.example.bookapp.data.db.paging.RemoteKeys
 
-@Database(entities = [BookEntity::class], version = 1, exportSchema = false)
+@Database(entities = [BookEntity::class, CachedBookEntity::class, RemoteKeys::class], version = 3, exportSchema = false)
 abstract class BookDatabase : RoomDatabase() {
     abstract fun bookDao(): BookDao
+    abstract fun pagingDao(): PagingDao
 
     companion object {
         @Volatile
@@ -21,7 +25,9 @@ abstract class BookDatabase : RoomDatabase() {
                     context.applicationContext,
                     BookDatabase::class.java,
                     "book_database"
-                ).build()
+                )
+                    .fallbackToDestructiveMigration()
+                    .build()
                 INSTANCE = instance
                 instance
             }

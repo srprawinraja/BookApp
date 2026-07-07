@@ -12,7 +12,7 @@ composeBom = "2026.02.01"
 navigationCompose = "2.9.8"
 retrofit = "2.11.0"
 gson = "2.10.1"
-room = "2.6.1"
+room = "2.7.0-alpha13"
 ksp = "2.1.0-1.0.29"
 
 [libraries]
@@ -41,6 +41,7 @@ converter-gson = { group = "com.squareup.retrofit2", name = "converter-gson", ve
 gson = { group = "com.google.code.gson", name = "gson", version.ref = "gson" }
 androidx-room-runtime = { group = "androidx.room", name = "room-runtime", version.ref = "room" }
 androidx-room-ktx = { group = "androidx.room", name = "room-ktx", version.ref = "room" }
+androidx-room-paging = { group = "androidx.room", name = "room-paging", version.ref = "room" }
 androidx-room-compiler = { group = "androidx.room", name = "room-compiler", version.ref = "room" }
 
 [plugins]

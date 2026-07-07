@@ -46,7 +46,7 @@ fun SearchScreen(
             shape = RoundedCornerShape(12.dp),
             colors = OutlinedTextFieldDefaults.colors(
                 focusedBorderColor = Color.Yellow,
-                unfocusedBorderColor = Color.LightGray,
+                unfocusedBorderColor = Color.Black,
                 cursorColor = Color.Black
             ),
             singleLine = true
