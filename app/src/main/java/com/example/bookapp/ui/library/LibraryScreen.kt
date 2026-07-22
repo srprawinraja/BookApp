@@ -15,27 +15,16 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.platform.LocalContext
-import android.app.Application
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.bookapp.ui.component.BookItem
 import com.example.bookapp.ui.model.Book
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun LibraryScreen(
-    onBookClick: (Book) -> Unit
+    onBookClick: (Book) -> Unit,
+    viewModel: LibraryViewModel = hiltViewModel()
 ) {
-    val context = LocalContext.current
-    val viewModel: LibraryViewModel = viewModel(
-        factory = object : ViewModelProvider.Factory {
-            override fun <T : ViewModel> create(modelClass: Class<T>): T {
-                return LibraryViewModel(context.applicationContext as Application) as T
-            }
-        }
-    )
     val state by viewModel.state.collectAsState()
 
     Scaffold(

@@ -2,15 +2,20 @@ package com.example.bookapp.ui.home
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.bookapp.data.RetroFitInstance
+import com.example.bookapp.data.ApiService
 import com.example.bookapp.ui.model.Book
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class HomeViewModel : ViewModel() {
+@HiltViewModel
+class HomeViewModel @Inject constructor(
+    private val apiService: ApiService
+) : ViewModel() {
     private val _state = MutableStateFlow(HomeState())
     val state: StateFlow<HomeState> = _state.asStateFlow()
 
@@ -33,7 +38,7 @@ class HomeViewModel : ViewModel() {
         viewModelScope.launch {
             _state.update { it.copy(isLoading = true) }
             try {
-                val response = RetroFitInstance.api.searchBooks(query = query, limit = 10)
+                val response = apiService.searchBooks(query = query, limit = 10)
                 val books = response.docs.map { doc ->
                     Book(
                         key = doc.key,

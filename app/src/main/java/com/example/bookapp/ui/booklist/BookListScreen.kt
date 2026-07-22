@@ -12,9 +12,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.paging.LoadState
 import androidx.paging.compose.collectAsLazyPagingItems
 import androidx.paging.compose.itemKey
@@ -25,16 +23,9 @@ import com.example.bookapp.ui.model.Book
 @Composable
 fun BookListScreen(
     onBookClick: (Book) -> Unit,
-    onBackClick: () -> Unit
+    onBackClick: () -> Unit,
+    viewModel: BookListViewModel = hiltViewModel()
 ) {
-    val context = LocalContext.current
-    val viewModel: BookListViewModel = viewModel(
-        factory = object : ViewModelProvider.Factory {
-            override fun <T : ViewModel> create(modelClass: Class<T>): T {
-                return BookListViewModel(context.applicationContext as Application) as T
-            }
-        }
-    )
     val pagingItems = viewModel.books.collectAsLazyPagingItems()
 
     Scaffold(

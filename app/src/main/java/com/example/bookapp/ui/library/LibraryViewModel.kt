@@ -1,19 +1,22 @@
 package com.example.bookapp.ui.library
 
-import android.app.Application
-import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.bookapp.data.db.book.BookRepository
 import com.example.bookapp.ui.model.Book
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class LibraryViewModel(application: Application) : AndroidViewModel(application) {
-    private val repository = BookRepository.getInstance(application)
+@HiltViewModel
+class LibraryViewModel @Inject constructor(
+    private val repository: BookRepository
+) : ViewModel() {
     private val _state = MutableStateFlow(LibraryState())
     val state: StateFlow<LibraryState> = _state.asStateFlow()
 

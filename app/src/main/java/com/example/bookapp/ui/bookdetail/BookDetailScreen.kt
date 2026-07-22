@@ -1,6 +1,5 @@
 package com.example.bookapp.ui.bookdetail
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -15,22 +14,18 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.hilt.navigation.compose.hiltViewModel
 import coil3.compose.AsyncImage
 import com.example.bookapp.ui.model.Book
-import android.app.Application
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.viewmodel.compose.viewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun BookDetailScreen(
     book: Book,
-    onBackClick: () -> Unit
+    onBackClick: () -> Unit,
+    viewModel: BookDetailViewModel = hiltViewModel()
 ) {
     val displayBook = remember(book) {
         book.copy(
@@ -39,14 +34,6 @@ fun BookDetailScreen(
         )
     }
 
-    val context = LocalContext.current
-    val viewModel: BookDetailViewModel = viewModel(
-        factory = object : ViewModelProvider.Factory {
-            override fun <T : ViewModel> create(modelClass: Class<T>): T {
-                return BookDetailViewModel(context.applicationContext as Application) as T
-            }
-        }
-    )
     val state by viewModel.state.collectAsState()
 
     LaunchedEffect(displayBook.key) {
@@ -68,7 +55,7 @@ fun BookDetailScreen(
                         Icon(
                             imageVector = if (state.isSaved) Icons.Default.Bookmark else Icons.Default.BookmarkBorder,
                             contentDescription = if (state.isSaved) "Unsave" else "Save",
-                            tint = if (state.isSaved) Color.Yellow else Color.Black
+                            tint = if (state.isSaved) Color(0xFF1A73E8) else Color.Black
                         )
                     }
                 },
@@ -133,7 +120,7 @@ fun BookDetailScreen(
             Spacer(modifier = Modifier.height(8.dp))
 
             if (state.isLoading) {
-                CircularProgressIndicator(color = Color.Yellow)
+                CircularProgressIndicator(color = Color(0xFF1A73E8))
             } else {
                 Text(
                     text = state.summary,

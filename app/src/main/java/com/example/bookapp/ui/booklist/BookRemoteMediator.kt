@@ -5,23 +5,25 @@ import androidx.paging.LoadType
 import androidx.paging.PagingState
 import androidx.paging.RemoteMediator
 import androidx.room.withTransaction
-import com.example.bookapp.data.RetroFitInstance
+import com.example.bookapp.data.ApiService
 import com.example.bookapp.data.db.BookDatabase
 import com.example.bookapp.data.db.paging.CachedBookEntity
 import com.example.bookapp.data.db.paging.RemoteKeys
 import java.io.IOException
+import javax.inject.Inject
 import retrofit2.HttpException
 
 @OptIn(ExperimentalPagingApi::class)
-class BookRemoteMediator(
-    private val database: BookDatabase
+class BookRemoteMediator @Inject constructor(
+    private val database: BookDatabase,
+    private val apiService: ApiService
 ) : RemoteMediator<Int, CachedBookEntity>() {
 
     override suspend fun load(
         loadType: LoadType,
         state: PagingState<Int, CachedBookEntity>
     ): MediatorResult {
-        android.util.Log.d("BookRemoteMediator", "Load called with type: $loadType")
+
         val page = when (loadType) {
             LoadType.REFRESH -> 1
             LoadType.PREPEND -> return MediatorResult.Success(endOfPaginationReached = true)
@@ -34,7 +36,7 @@ class BookRemoteMediator(
         }
 
         try {
-            val response = RetroFitInstance.api.searchBooks(
+            val response = apiService.searchBooks(
                 query = "book",
                 limit = state.config.pageSize,
                 page = page

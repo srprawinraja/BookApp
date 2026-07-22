@@ -1,20 +1,24 @@
 package com.example.bookapp.ui.bookdetail
 
-import android.app.Application
-import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.bookapp.data.RetroFitInstance
+import com.example.bookapp.data.ApiService
 import com.example.bookapp.data.db.book.BookEntity
 import com.example.bookapp.data.db.book.BookRepository
 import com.example.bookapp.ui.model.Book
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class BookDetailViewModel(application: Application) : AndroidViewModel(application) {
-    private val repository = BookRepository.getInstance(application)
+@HiltViewModel
+class BookDetailViewModel @Inject constructor(
+    private val repository: BookRepository,
+    private val apiService: ApiService
+) : ViewModel() {
     private val _state = MutableStateFlow(BookDetailState())
     val state: StateFlow<BookDetailState> = _state.asStateFlow()
 
@@ -71,7 +75,7 @@ class BookDetailViewModel(application: Application) : AndroidViewModel(applicati
         viewModelScope.launch {
             _state.update { it.copy(isLoading = true) }
             try {
-                val response = RetroFitInstance.api.getWorkDetails(bookKey)
+                val response = apiService.getWorkDetails(bookKey)
                 val summaryText = response.getDescriptionText()
                 _state.update { 
                     it.copy(

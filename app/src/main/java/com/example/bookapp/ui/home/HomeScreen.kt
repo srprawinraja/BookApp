@@ -16,7 +16,7 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.hilt.navigation.compose.hiltViewModel
 import coil3.compose.AsyncImage
 import com.example.bookapp.ui.component.BookRow
 import com.example.bookapp.ui.component.CategoryRow
@@ -25,7 +25,7 @@ import kotlin.math.absoluteValue
 
 @Composable
 fun HomeScreen(
-    viewModel: HomeViewModel = viewModel(),
+    viewModel: HomeViewModel = hiltViewModel(),
     onBookClick: (Book) -> Unit = {},
     onViewAllClick: () -> Unit = {}
 ) {

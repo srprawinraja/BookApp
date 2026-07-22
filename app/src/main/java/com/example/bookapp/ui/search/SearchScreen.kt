@@ -17,14 +17,14 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.bookapp.ui.component.BookItem
 import com.example.bookapp.ui.component.CategoryRow
 import com.example.bookapp.ui.model.Book
 
 @Composable
 fun SearchScreen(
-    viewModel: SearchViewModel = viewModel(),
+    viewModel: SearchViewModel = hiltViewModel(),
     onBookClick: (Book) -> Unit = {}
 ) {
     val state by viewModel.state.collectAsState()

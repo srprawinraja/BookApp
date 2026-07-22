@@ -2,8 +2,9 @@ package com.example.bookapp.ui.search
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.bookapp.data.RetroFitInstance
+import com.example.bookapp.data.ApiService
 import com.example.bookapp.ui.model.Book
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -11,8 +12,12 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class SearchViewModel : ViewModel() {
+@HiltViewModel
+class SearchViewModel @Inject constructor(
+    private val apiService: ApiService
+) : ViewModel() {
     private val _state = MutableStateFlow(SearchState())
     val state: StateFlow<SearchState> = _state.asStateFlow()
 
@@ -51,7 +56,7 @@ class SearchViewModel : ViewModel() {
         viewModelScope.launch {
             _state.update { it.copy(isLoading = true) }
             try {
-                val response = RetroFitInstance.api.searchBooks(query = searchQuery, limit = 20)
+                val response = apiService.searchBooks(query = searchQuery, limit = 20)
                 val books = response.docs.map { doc ->
                     Book(
                         key = doc.key,
